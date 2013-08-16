@@ -1,4 +1,4 @@
-# Mozilla Open Badges Backpack [![Build Status](https://secure.travis-ci.org/mozilla/openbadges.png?branch=redux-1.1)](http://travis-ci.org/mozilla/openbadges)
+# Mozilla Open Badges Backpack [![Build Status](https://secure.travis-ci.org/mozilla/openbadges-backpack.png?branch=master)](http://travis-ci.org/mozilla/openbadges-backpack)
 
 This is version 1.1 of the Open Badges Backpack, rebuilt from the
 ground up.
@@ -12,8 +12,8 @@ Node 0.10.
 ## Quick Start
 
 ```
-git clone -b redux-1.1 git://github.com/mozilla/openbadges.git backpack
-cd backpack
+git clone git://github.com/mozilla/openbadges-backpack.git
+cd openbadges-backpack
 npm install
 npm test
 DEBUG= COOKIE_SECRET=cookie node bin/backpack.js
