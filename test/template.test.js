@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var should = require('should');
 
 var testUtil = require('./lib/util');
 var request = testUtil.request;

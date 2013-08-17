@@ -1,4 +1,3 @@
-var should = require('should');
 var sinon = require('sinon');
 
 var request = require('./lib/util').request;

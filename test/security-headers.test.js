@@ -1,5 +1,3 @@
-var should = require('should');
-
 var request = require('./lib/util').request;
 
 describe("app security headers", function() {
