@@ -27,4 +27,16 @@ describe("app", function() {
       .expect('Forbidden')
       .expect(403, done);
   });
+
+  it('disallows access to /test/ when not in debug mode', function(done) {
+    request()
+      .get('/test/')
+      .expect(404, done);
+  });
+
+  it('allows access to /test/ when in debug mode', function(done) {
+    request({debug: true})
+      .get('/test/')
+      .expect(200, done);
+  });
 });
