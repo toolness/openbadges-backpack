@@ -11,7 +11,7 @@
   {% set flashMessages = fetchAndClearFlashMessages() %}
   {% for message in flashMessages %}
     <div class="{{ message.category }}">
-      {{ message.html|safe }}
+      {{ message.content }}
     </div>
   {% endfor %}
 

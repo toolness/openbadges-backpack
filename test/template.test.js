@@ -18,6 +18,11 @@ describe("template middleware", function() {
       .expect(200, done);
   });
 
+  it('defines response.render.SafeString', function() {
+    testUtil.app().response.render.SafeString
+      .should.be.a('function');
+  });
+
   it('defines DOT_MIN in app.locals', function() {
     testUtil.app({debug: true}).locals.DOT_MIN
       .should.equal('');
@@ -73,9 +78,9 @@ describe("layout.html", function() {
       .end(done);
   });
 
-  it('displays flash message content as safe HTML', function(done) {
-    layoutRequest({flash: ['info', '<em>hi</em>']})
-      .expect(/<em>hi<\/em>/)
+  it('displays flash message content', function(done) {
+    layoutRequest({flash: ['info', '<hi']})
+      .expect(/&lt;hi/)
       .end(done);
   });
 
