@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var request = require('supertest');
+var should = require('should');
 
 var backpack = require('../../');
 
@@ -50,4 +51,17 @@ var FakeLoader = exports.templateLoader = function FakeLoader(map) {
       }
     }
   };
+};
+
+should.Assertion.prototype.route = function(method, url) {
+  var match = this.obj._router.matchRequest({
+    method: method,
+    url: url
+  });
+  var baseMsg = 'expected route for ' + method + ' ' + url + ' to ';
+  return this.assert(
+    match && typeof(match) == 'object',
+    function() { return baseMsg + 'exist' },
+    function() { return baseMsg + 'not exist' }
+  );
 };

@@ -1,5 +1,3 @@
-var should = require('should');
-
 var testUtil = require('./lib/util');
 
 describe("persona middleware", function() {
@@ -9,16 +7,10 @@ describe("persona middleware", function() {
   });
 
   it('defines POST /persona/verify', function() {
-    testUtil.app()._router.matchRequest({
-      method: 'POST',
-      url: '/persona/verify'
-    }).should.be.a('object');
+    testUtil.app().should.have.route('POST', '/persona/verify');
   });
 
   it('defines POST /persona/logout', function() {
-    testUtil.app()._router.matchRequest({
-      method: 'POST',
-      url: '/persona/logout'
-    }).should.be.a('object');
+    testUtil.app().should.have.route('POST', '/persona/logout');
   });  
 });
