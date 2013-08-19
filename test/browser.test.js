@@ -46,7 +46,7 @@ function start(path, cb) {
 }
 
 function runQunitTests(path, cb) {
-  if ('PHANTOMJS' in process.env)
+  if ('PHANTOMJS' in process.env || process.platform == 'win32')
     start(path, cb);
   else
     spawn('which', [PHANTOMJS]).on('exit', function(status) {
