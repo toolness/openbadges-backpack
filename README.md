@@ -7,7 +7,9 @@ ground up.
 
 Node 0.10.
 
-[PhantomJS][] 1.8 or later is required to run the test suite.
+[PhantomJS][] 1.8 or later can be used to automatically run the
+browser-side tests from the command-line, but it can be optionally
+disabled.
 
 ## Quick Start
 
@@ -56,7 +58,19 @@ string), the boolean is true; otherwise, it's false.
   than HTTP, and the `SSL_KEY` environment variable must also
   be defined.
 
-## Test Coverage
+## Tests
+
+All tests can be run via `npm test`.
+
+Individual test suites can be run via
+<code>node_modules/.bin/mocha test/<em>filename</em></code>, where
+*filename* is the name of the test. See [mocha(1)][] for more options.
+
+By default, PhantomJS is used to run the browser-side tests, but they
+can be disabled if the `DISABLE_PHANTOM_TESTS` environment variable is
+defined.
+
+### Test Coverage
 
 Build/install [jscoverage][], run `make test-cov`, then open
 `coverage.html` in a browser.
@@ -66,4 +80,5 @@ be rejected.
 
   [PhantomJS]: http://phantomjs.org/
   [stubbyid]: http://toolness.github.io/stubbyid/
+  [mocha(1)]: http://visionmedia.github.io/mocha/#usage
   [jscoverage]: https://github.com/visionmedia/node-jscoverage
