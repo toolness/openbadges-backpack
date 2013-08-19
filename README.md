@@ -7,8 +7,8 @@ ground up.
 
 Node 0.10.
 
-[PhantomJS][] 1.8 or later can be used to automatically run the
-browser-side tests from the command-line, but it can be optionally
+[PhantomJS][] 1.8 or later is used to automatically run the
+browser-side tests from the command-line, but this can be optionally
 disabled.
 
 ## Quick Start
@@ -67,7 +67,7 @@ Individual test suites can be run via
 *filename* is the name of the test. See [mocha(1)][] for more options.
 
 By default, PhantomJS is used to run the browser-side tests, but they
-can be disabled if the `DISABLE_PHANTOM_TESTS` environment variable is
+can be skipped if the `DISABLE_PHANTOM_TESTS` environment variable is
 defined.
 
 ### Test Coverage
