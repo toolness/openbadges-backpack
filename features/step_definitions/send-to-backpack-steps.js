@@ -14,7 +14,7 @@ function IssuerSite() {
 
   self.sendBadgeTo = function(badge, backpack) {
     if (backpack.indexOf(badge) !== -1)
-      return { duplicate: true };
+      return {result: "DUPLICATE"};
     return {
       accept: function() {
         backpack.push(badge);
@@ -32,7 +32,7 @@ module.exports = require('../../test/lib/fiber-cucumber')(function() {
     this.backpack = [];
   });
 
-  this.Given(/^I have earned a badge$/, function() {
+  this.Given(/^(I have earned a badge|a pushy issuer gives me a useless spam badge)$/, function() {
     this.badge = this.site.issueBadge();
   });
 
@@ -41,9 +41,9 @@ module.exports = require('../../test/lib/fiber-cucumber')(function() {
     this.site.sendBadgeTo(this.badge, this.backpack).accept();
   });
 
-  this.When(/^I (start to )?send .* to my Backpack.*$/, function(startOnly) {
+  this.When(/^(?:I|they) (start sending|send) .* to my Backpack.*$/, function(sendType) {
     this.sendToBackpackRequest = this.site.sendBadgeTo(this.badge, this.backpack);
-    if (!startOnly)
+    if (sendType == "send")
       this.sendToBackpackRequest.accept();
   });
 
@@ -65,7 +65,6 @@ module.exports = require('../../test/lib/fiber-cucumber')(function() {
   });
 
   this.Then(/^I should see a notice that I already have that badge$/, function() {
-    this.sendToBackpackRequest.duplicate.should.be.true;
+    this.sendToBackpackRequest.result.should.equal("DUPLICATE");
   });
-
 });

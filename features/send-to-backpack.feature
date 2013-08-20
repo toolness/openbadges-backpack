@@ -9,12 +9,12 @@ Feature: Send to Backpack
     Then I should see my badge in my Backpack
 
   Scenario: Reject sending an earned badge
-    When a pushy Issuer starts sending a badge to my Backpack
-    But I reject it
+    Given a pushy issuer gives me a useless spam badge
+    When they start sending it to my Backpack
+    And I reject it
     Then I should not see it in my Backpack
 
   Scenario: Sending a badge already in Backpack
     Given I have a badge in my Backpack
-    When I start to send that badge to my Backpack again
+    When I start sending that badge to my Backpack again
     Then I should see a notice that I already have that badge
-
