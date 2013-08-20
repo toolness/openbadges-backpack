@@ -1,7 +1,9 @@
 (function() {
   module("login");
 
-  var script = $.get("/js/login.js", "", "text");
+  // We need to pass an empty function callback or else jQuery
+  // will execute the script itself on IE8.
+  var script = $.get("/js/login.js", "", function() {}, "text");
 
   function loginTest(name, options, cb) {
     if (!cb) {
@@ -73,7 +75,7 @@
   });
 
   loginTest("onlogin() displays alert on verify failure", function(t) {
-    sinon.stub(window, 'alert');
+    sinon.stub(window, 'showAlert');
     t.server.respondWith("POST", "/persona/verify", function(req) {
       req.respond(200, {"Content-Type": "application/json"},
                   JSON.stringify({status: 'failure', reason: 'blah'}));
@@ -81,9 +83,9 @@
     t.watchArgs.onlogin("assrt");
     t.server.respond();
     ok(window.reloadPage.notCalled, "reloadPage() not called");
-    ok(window.alert.calledOnce, "alert() called once");
-    deepEqual(window.alert.firstCall.args, ["LOGIN FAILURE: blah"]);
-    window.alert.restore();
+    ok(window.showAlert.calledOnce, "showAlert() called once");
+    deepEqual(window.showAlert.firstCall.args, ["LOGIN FAILURE: blah"]);
+    window.showAlert.restore();
   });
 
   loginTest("onlogout() reloads page on success", {

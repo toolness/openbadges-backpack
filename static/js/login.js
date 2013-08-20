@@ -4,6 +4,12 @@ window.reloadPage = function() {
   location.reload();
 };
 
+window.showAlert = function(msg) {
+  // We bind this to a global so we can stub it out in test suites, as
+  // window.alert can't be stubbed on IE8.
+  window.alert(msg);
+};
+
 (function() {
   var csrfToken = $('meta[name="csrf"]').attr('content');
   var email = $('meta[name="email"]').attr('content') || null;
@@ -17,7 +23,7 @@ window.reloadPage = function() {
       }, function(response) {
         if (response && typeof(response) == "object" &&
             response.status == "failure") {
-          alert("LOGIN FAILURE: " + response.reason);
+          showAlert("LOGIN FAILURE: " + response.reason);
         } else
           reloadPage();
       });
