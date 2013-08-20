@@ -18,3 +18,8 @@ Feature: Send to Backpack
     Given I have a badge in my Backpack
     When I start sending that badge to my Backpack again
     Then I should see a notice that I already have that badge
+
+  Scenario: Earned multiple badges and has a Backpack
+    Given I have earned 2 badges
+    When I send them to my Backpack
+    Then I should see the badges in my Backpack
