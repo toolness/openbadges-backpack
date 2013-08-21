@@ -1,7 +1,8 @@
 Feature: Send to Backpack
-  In order to export my badges to a common place where I can do 
-  interesting things with them, As a badge earner on multiple different
-  sites, I want those sites to offer me a Send to Backpack option.
+  In order to have my badges to a common place where I can do 
+  interesting things with them, I want badge issuers to be able
+  to send badges to my backpack--assuming I have given them permission
+  to do so.
 
   Scenario: Earned a badge and has a Backpack
     Given I have earned a badge
