@@ -25,13 +25,13 @@ module.exports = fiberize(function() {
   });
 
   this.When(/^(?:I|they) (start sending|send) .* to my Backpack.*$/, function(sendType) {
-    this.sending = this.site.sendBadgesTo(this.backpack);
+    this.sendGroup = this.site.sendBadgesTo(this.backpack);
     if (sendType == "send")
-      this.sending.acceptAll();
+      this.sendGroup.acceptAll();
   });
 
   this.When(/^I reject it$/, function() {
-    this.sending.rejectAll();
+    this.sendGroup.rejectAll();
   });
 
   this.Then(/^I should see (?:my|the) badges? in my Backpack$/, function() {
@@ -43,10 +43,10 @@ module.exports = fiberize(function() {
   });
 
   this.Then(/^I should see a notice that I already have that badge$/, function() {
-    this.sending[0].result.should.equal("EXISTS");
+    this.sendGroup[0].result.should.equal("EXISTS");
   });
 
   this.Then(/^I should see a notice that the badge is for a different email$/, function() {
-    this.sending[0].result.should.equal("RECIPIENT_MISMATCH");
+    this.sendGroup[0].result.should.equal("RECIPIENT_MISMATCH");
   });
 });
