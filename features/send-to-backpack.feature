@@ -1,5 +1,5 @@
 Feature: Send to Backpack
-  In order to have my badges to a common place where I can do 
+  In order to have my badges in a common place where I can do 
   interesting things with them, I want badge issuers to be able
   to send badges to my backpack--assuming I have given them permission
   to do so.
