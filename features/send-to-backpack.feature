@@ -24,3 +24,9 @@ Feature: Send to Backpack
     Given I have earned 2 badges
     When I send them to my Backpack
     Then I should see the badges in my Backpack
+
+  Scenario: Earned a badge with a different email address
+    Given I am logged into my Backpack as play@example.org
+    And I have earned a badge as work@example.org
+    When I start sending it to my Backpack
+    Then I should see a notice that the badge is for a different email

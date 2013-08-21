@@ -1,10 +1,19 @@
 var fiberize = require('../../test/lib/fiber-cucumber');
 
 module.exports = fiberize(function() {
+  this.Given(/^I am logged into my Backpack as (.+)$/, function(email) {
+    this.backpack.loggedInUser = email;
+  });
+
   this.Given(/^I have earned (\d+) badges?$/, function(number) {
     this.badges = [];
     for (var i = 0; i < parseInt(number); i++)
       this.badges.push(this.site.issueBadge());
+  });
+
+  this.Given(/^I have earned a badge as (.+)$/, function(email) {
+    this.site.loggedInUser = email;
+    this.badges = [this.site.issueBadge()];
   });
 
   this.Given(/^(I have earned a badge|a pushy issuer gives me a useless spam badge)$/, function() {
@@ -36,5 +45,9 @@ module.exports = fiberize(function() {
 
   this.Then(/^I should see a notice that I already have that badge$/, function() {
     this.sending[0].result.should.equal("EXISTS");
+  });
+
+  this.Then(/^I should see a notice that the badge is for a different email$/, function() {
+    this.sending[0].result.should.equal("RECIPIENT_MISMATCH");
   });
 });

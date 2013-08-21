@@ -2,20 +2,45 @@ var should = require('should');
 
 var fiberize = require('../../test/lib/fiber-cucumber');
 
-function Badge() {
+var DEFAULT_EMAIL = "me@example.org";
+
+function Backpack() {
+  var self = [];
+
+  self.loggedInUser = DEFAULT_EMAIL;
+
+  return self;
+}
+
+function Badge(options) {
   var self = this;
+
+  self.recipient = options.recipient;
+
   return self;
 }
 
 function SendToBackpackRequest(badge, backpack) {
-  if (backpack.indexOf(badge) !== -1)
-    return {result: "EXISTS"};
-  return {
-    accept: function() {
-      backpack.push(badge);
-    },
-    reject: function() {}
+  var self = {result: "PENDING"};
+
+  self.accept = function() {
+    self.result.should.equal("PENDING");
+    backpack.push(badge);
+    self.result = "ACCEPTED";
   };
+
+  self.reject = function() {
+    self.result.should.equal("PENDING");
+    self.result = "REJECTED";
+  };
+
+  if (backpack.loggedInUser != badge.recipient)
+    self.result = "RECIPIENT_MISMATCH";
+
+  if (backpack.indexOf(badge) !== -1)
+    self.result = "EXISTS";
+
+  return self;
 }
 
 function SendToBackpackRequestGroup(badges, backpack) {
@@ -39,8 +64,10 @@ function SendToBackpackRequestGroup(badges, backpack) {
 function IssuerSite() {
   var self = this;
   
+  self.loggedInUser = DEFAULT_EMAIL;
+
   self.issueBadge = function() {
-    return new Badge();
+    return new Badge({recipient: self.loggedInUser});
   };
 
   self.sendBadgesTo = function(badges, backpack) {
@@ -59,6 +86,6 @@ should.Assertion.prototype.includeEach = function(array) {
 module.exports = fiberize(function() {
   this.Before(function(){
     this.site = new IssuerSite();
-    this.backpack = [];
+    this.backpack = new Backpack();
   });
 });
