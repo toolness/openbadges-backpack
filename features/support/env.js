@@ -65,13 +65,14 @@ function IssuerSite() {
   var self = this;
   
   self.loggedInUser = DEFAULT_EMAIL;
+  self.issuedBadges = [];
 
   self.issueBadge = function() {
-    return new Badge({recipient: self.loggedInUser});
+    self.issuedBadges.push(new Badge({recipient: self.loggedInUser}));
   };
 
-  self.sendBadgesTo = function(badges, backpack) {
-    return SendToBackpackRequestGroup(badges, backpack);
+  self.sendBadgesTo = function(backpack) {
+    return SendToBackpackRequestGroup(self.issuedBadges, backpack);
   };
 
   return self;
