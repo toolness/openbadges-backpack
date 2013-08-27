@@ -151,18 +151,18 @@ describe("SendToBackpackRequest", function() {
 describe("SendToBackpackRequest.Group", function() {
   var backpack;
   var FakeBackpack = function(owner) {
-    var self = {
-      owner: owner,
-      _badges: {}
-    };
+    var self = [];
+
+    self.owner = owner;
 
     self.has = function(guid, cb) {
-      cb(null, (guid in self._badges));
+      return cb(null, self.indexOf(guid) != -1)
     };
 
     self.receive = function(info, cb) {
       info.guid.should.be.a('string');
-      self._badges[info.guid] = info;
+      self.indexOf(info.guid).should.eql(-1);
+      self.push(info.guid);
       cb(null);
     };
 
