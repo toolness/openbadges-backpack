@@ -4,20 +4,34 @@ var badgehost = require('badgehost');
 
 var SendToBackpackRequest = require('../').SendToBackpackRequest;
 
-describe("SendToBackpackRequest", function() {
-  var app = badgehost.app.build();
-  var server;
-  var badgeFor = function(recipient) {
-    return app.url('demo.json', {
-      set: {
-        recipient: {
-          type: "email",
-          hashed: false,
-          identity: "a@example.org"
-        }
+var badgehostApp;
+
+var badgeFor = function(recipient, uid) {
+  return badgehostApp.url('demo.json', {
+    set: {
+      uid: uid || 'uid-1',
+      recipient: {
+        type: "email",
+        hashed: false,
+        identity: recipient
       }
-    })
-  };
+    }
+  })
+};
+
+before(function(done) {
+  badgehostApp = badgehost.app.build();
+  badgehostApp.listen(function() {
+    badgehostApp.server = this;
+    done();
+  });
+});
+
+after(function() {
+  badgehostApp.server.close();
+});
+
+describe("SendToBackpackRequest", function() {
   var validRequest = function(backpackMethods, cb) {
     if (!cb) {
       cb = backpackMethods;
@@ -25,23 +39,12 @@ describe("SendToBackpackRequest", function() {
     }
     return SendToBackpackRequest(_.extend({
       owner: "a@example.org",
-      has: function(guid, cb) { cb(null, false); }
+      has: function(guid, cb) { cb(null, false); },
     }, backpackMethods), badgeFor("a@example.org"), cb);
   };
 
-  before(function(done) {
-    app.listen(function() {
-      server = this;
-      done();
-    });
-  });
-
-  after(function() {
-    server.close();
-  });
-
   it("returns 'invalid' for URLs that 404", function(done) {
-    SendToBackpackRequest({}, app.url('404'), function(err, req) {
+    SendToBackpackRequest({}, badgehostApp.url('404'), function(err, req) {
       should.equal(err, null, "error is not fatal");
       req.result.should.eql("invalid");
       req.canBeAccepted.should.equal(false);
@@ -141,6 +144,88 @@ describe("SendToBackpackRequest", function() {
         req.canBeAccepted.should.equal(false);
         done();
       });
+    });
+  });
+});
+
+describe("SendToBackpackRequest.Group", function() {
+  var backpack;
+  var FakeBackpack = function(owner) {
+    var self = {
+      owner: owner,
+      _badges: {}
+    };
+
+    self.has = function(guid, cb) {
+      cb(null, (guid in self._badges));
+    };
+
+    self.receive = function(info, cb) {
+      info.guid.should.be.a('string');
+      self._badges[info.guid] = info;
+      cb(null);
+    };
+
+    return self;
+  };
+
+  beforeEach(function() {
+    backpack = FakeBackpack('a@example.org');
+  });
+
+  it("should report non-fatal problems", function(done) {
+    SendToBackpackRequest.Group(backpack, [
+      badgeFor('b@example.org'),
+      badgehostApp.url('404')
+    ], function(err, group) {
+      should.equal(err, null, "no fatal errors");
+      group.length.should.eql(2);
+      group[0].result.should.eql('recipient_mismatch');
+      group[1].result.should.eql('invalid');
+      done();
+    });
+  });
+
+  it("should allow accepting of all valid badges", function(done) {
+    SendToBackpackRequest.Group(backpack, [
+      badgeFor('b@example.org'),
+      badgehostApp.url('404'),
+      badgeFor('a@example.org', '1'),
+      badgeFor('a@example.org', '2')
+    ], function(err, group) {
+      should.equal(err, null, "no fatal errors");
+      group.acceptAll(function(err) {
+        should.equal(err, null);
+        group[2].result.should.eql('accepted');
+        group[3].result.should.eql('accepted');
+        done();
+      });
+    });
+  });
+
+  it("should allow rejecting of all valid badges", function(done) {
+    SendToBackpackRequest.Group(backpack, [
+      badgehostApp.url('404'),
+      badgeFor('a@example.org', '1'),
+      badgeFor('a@example.org', '2')
+    ], function(err, group) {
+      should.equal(err, null, "no fatal errors");
+      group.rejectAll(function(err) {
+        should.equal(err, null);
+        group[1].result.should.eql('rejected');
+        group[2].result.should.eql('rejected');
+        done();
+      });
+    });
+  });
+
+  it('should propagate fatal errors', function(done) {
+    SendToBackpackRequest.Group({
+      owner: 'a@example.org',
+      has: function(guid, cb) { cb(new Error("BACKPACK KABOOM")); }
+    }, [badgeFor('a@example.org')], function(err) {
+      err.message.should.eql("BACKPACK KABOOM");
+      done();
     });
   });
 });
