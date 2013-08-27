@@ -7,7 +7,7 @@ var DEFAULT_EMAIL = "me@example.org";
 function Backpack() {
   var self = [];
 
-  self.loggedInUser = DEFAULT_EMAIL;
+  self.owner = DEFAULT_EMAIL;
 
   return self;
 }
@@ -21,24 +21,24 @@ function Badge(options) {
 }
 
 function SendToBackpackRequest(badge, backpack) {
-  var self = {result: "PENDING"};
+  var self = {result: null};
 
   self.accept = function() {
-    self.result.should.equal("PENDING");
+    should.equal(self.result, null);
     backpack.push(badge);
-    self.result = "ACCEPTED";
+    self.result = "accepted";
   };
 
   self.reject = function() {
-    self.result.should.equal("PENDING");
-    self.result = "REJECTED";
+    should.equal(self.result, null);
+    self.result = "rejected";
   };
 
-  if (backpack.loggedInUser != badge.recipient)
-    self.result = "RECIPIENT_MISMATCH";
+  if (backpack.owner != badge.recipient)
+    self.result = "recipient_mismatch";
 
   if (backpack.indexOf(badge) !== -1)
-    self.result = "EXISTS";
+    self.result = "exists";
 
   return self;
 }

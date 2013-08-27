@@ -2,7 +2,7 @@ var fiberize = require('../../test/lib/fiber-cucumber');
 
 module.exports = fiberize(function() {
   this.Given(/^I am logged into my Backpack as (.+)$/, function(email) {
-    this.backpack.loggedInUser = email;
+    this.backpack.owner = email;
   });
 
   this.Given(/^I have earned (\d+) badges?$/, function(number) {
@@ -43,10 +43,10 @@ module.exports = fiberize(function() {
   });
 
   this.Then(/^I should see a notice that I already have that badge$/, function() {
-    this.sendGroup[0].result.should.equal("EXISTS");
+    this.sendGroup[0].result.should.equal("exists");
   });
 
   this.Then(/^I should see a notice that the badge is for a different email$/, function() {
-    this.sendGroup[0].result.should.equal("RECIPIENT_MISMATCH");
+    this.sendGroup[0].result.should.equal("recipient_mismatch");
   });
 });
