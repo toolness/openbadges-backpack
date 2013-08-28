@@ -20,7 +20,7 @@ function Badge(options) {
   return self;
 }
 
-function SendToBackpackRequest(badge, backpack) {
+function SendToBackpackRequest(backpack, badge) {
   var self = {result: null};
 
   self.accept = function() {
@@ -47,7 +47,7 @@ function SendToBackpackRequestGroup(badges, backpack) {
   var self = new Array();
 
   badges.forEach(function(badge) {
-    self.push(SendToBackpackRequest(badge, backpack));
+    self.push(SendToBackpackRequest(backpack, badge));
   });
 
   self.acceptAll = function() {
