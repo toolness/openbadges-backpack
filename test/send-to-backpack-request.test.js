@@ -2,27 +2,18 @@ var _ = require('underscore');
 var should = require('should');
 var badgehost = require('badgehost');
 
+var testUtil = require('./lib/util');
+var FakeBackpack = testUtil.FakeBackpack;
 var SendToBackpackRequest = require('../').SendToBackpackRequest;
 
 var badgehostApp;
-
-var badgeFor = function(recipient, uid) {
-  return badgehostApp.url('demo.json', {
-    set: {
-      uid: uid || 'uid-1',
-      recipient: {
-        type: "email",
-        hashed: false,
-        identity: recipient
-      }
-    }
-  })
-};
+var badgeFor;
 
 before(function(done) {
-  badgehostApp = badgehost.app.build();
-  badgehostApp.listen(function() {
-    badgehostApp.server = this;
+  testUtil.BadgehostApp(function(err, app) {
+    if (err) return done(err);
+    badgehostApp = app;
+    badgeFor = app.badgeFor.bind(app);
     done();
   });
 });
@@ -150,24 +141,6 @@ describe("SendToBackpackRequest", function() {
 
 describe("SendToBackpackRequest.Group", function() {
   var backpack;
-  var FakeBackpack = function(owner) {
-    var self = [];
-
-    self.owner = owner;
-
-    self.has = function(guid, cb) {
-      return cb(null, self.indexOf(guid) != -1)
-    };
-
-    self.receive = function(info, cb) {
-      info.guid.should.be.a('string');
-      self.indexOf(info.guid).should.eql(-1);
-      self.push(info.guid);
-      cb(null);
-    };
-
-    return self;
-  };
 
   beforeEach(function() {
     backpack = FakeBackpack('a@example.org');
