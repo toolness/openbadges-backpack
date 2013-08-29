@@ -1,8 +1,11 @@
 var _ = require('underscore');
 var request = require('supertest');
 var should = require('should');
+var validator = require('openbadges-validator');
+var badgehost = require('badgehost');
 
 var backpack = require('../../');
+var fibrous = backpack.fibrous;
 
 exports.app = function(options) {
   options = _.defaults(options || {}, {
@@ -65,3 +68,50 @@ should.Assertion.prototype.route = function(method, url) {
     function() { return baseMsg + 'not exist' }
   );
 };
+
+exports.FakeBackpack = function(owner) {
+  var self = [];
+
+  self.owner = owner;
+
+  self.has = fibrous(function(options, cb) {
+    if (typeof(options) == 'string') options = {guid: options};
+    if (options.guid)
+      return cb(null, self.indexOf(options.guid) != -1);
+    validator.getAssertionGUID(options.urlOrSignature, function(err, guid) {
+      if (err) return cb(err);
+      return self.has({guid: guid}, cb);
+    });
+  });
+
+  self.receive = fibrous(function(info, cb) {
+    info.guid.should.be.a('string');
+    self.indexOf(info.guid).should.eql(-1);
+    self.push(info.guid);
+    cb(null);
+  });
+
+  return self;
+};
+
+exports.BadgehostApp = fibrous(function(cb) {
+  var app = badgehost.app.build();
+
+  app.badgeFor = function(recipient, uid) {
+    return app.url('demo.json', {
+      set: {
+        uid: uid || 'uid-1',
+        recipient: {
+          type: "email",
+          hashed: false,
+          identity: recipient
+        }
+      }
+    })
+  };
+
+  app.listen(function() {
+    app.server = this;
+    cb(null, app);
+  });
+});

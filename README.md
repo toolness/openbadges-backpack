@@ -60,15 +60,22 @@ string), the boolean is true; otherwise, it's false.
 
 ## Tests
 
-All tests can be run via `npm test`.
+All unit and acceptance tests can be run via `npm test`.
 
-Individual test suites can be run via
+### Unit Tests
+
+Individual unit test suites can be run via
 <code>node_modules/.bin/mocha test/<em>filename</em></code>, where
 *filename* is the name of the test. See [mocha(1)][] for more options.
 
-By default, PhantomJS is used to run the browser-side tests, but they
+By default, PhantomJS is used to run the browser-side unit tests, but they
 can be skipped if the `DISABLE_PHANTOM_TESTS` environment variable is
 defined.
+
+### Acceptance Tests
+
+We use [cucumber][] for acceptance testing. To run the acceptance tests,
+run `node_modules/.bin/cucumber-js -f pretty`.
 
 ### Test Coverage
 
@@ -82,3 +89,4 @@ be rejected.
   [stubbyid]: http://toolness.github.io/stubbyid/
   [mocha(1)]: http://visionmedia.github.io/mocha/#usage
   [jscoverage]: https://github.com/visionmedia/node-jscoverage
+  [cucumber]: https://github.com/cucumber/cucumber-js
