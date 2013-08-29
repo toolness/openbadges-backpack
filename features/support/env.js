@@ -3,6 +3,7 @@ var badgehost = require('badgehost');
 var validator = require('openbadges-validator');
 var fiberize = require('../../test/lib/fiber-cucumber');
 var Future = require('fibers/future');
+var fibrous = require('../../').fibrous;
 var SendToBackpackRequest = require('../../').SendToBackpackRequest;
 var SendToBackpackRequestGroup = SendToBackpackRequest.Group;
 
@@ -15,15 +16,15 @@ var FakeBackpack = function(owner) {
 
   self.owner = owner;
 
-  self.has = function(guid, cb) {
-    return cb(null, self.indexOf(guid) != -1)
-  };
-
-  self.indexOfBadgeWithUrl = function(url) {
-    var getAssertionGUID = Future.wrap(validator.getAssertionGUID);
-    var guid = getAssertionGUID(url).wait();
-    return Array.prototype.indexOf.call(self, guid);
-  };
+  self.has = fibrous(function(options, cb) {
+    if (typeof(options) == 'string') options = {guid: options};
+    if (options.guid)
+      return cb(null, self.indexOf(options.guid) != -1);
+    validator.getAssertionGUID(options.urlOrSignature, function(err, guid) {
+      if (err) return cb(err);
+      return self.has({guid: guid}, cb);
+    });
+  });
 
   self.receive = function(info, cb) {
     info.guid.should.be.a('string');
@@ -69,10 +70,12 @@ function IssuerSite() {
 }
 
 should.Assertion.prototype.includeBadges = function(array) {
+  var backpack = this.obj;
+
   array.length.should.be.above(0);
   array.forEach(function(item) {
     this.assert(
-      ~this.obj.indexOfBadgeWithUrl(item), 
+      backpack.has({urlOrSignature: item}), 
       function(){ return 'expected backpack to include badge with url ' + item },
       function(){ return 'expected backpack to not include badge with url ' + item }
     );
