@@ -1,4 +1,5 @@
 var fiberize = require('../../test/lib/fiber-cucumber');
+var should = require('should');
 
 module.exports = fiberize(function() {
   this.Given(/^I am logged into my Backpack as (.+)$/, function(email) {
@@ -26,8 +27,13 @@ module.exports = fiberize(function() {
 
   this.When(/^(?:I|they) (start sending|send) .* to my Backpack.*$/, function(sendType) {
     this.sendGroup = this.site.sendBadgesTo(this.backpack);
-    if (sendType == "send")
+    if (sendType == "send") {
+      this.sendGroup.forEach(function(request) {
+        should.equal(request.result, null);
+        request.canBeAccepted.should.equal(true); 
+      });
       this.sendGroup.acceptAll();
+    }
   });
 
   this.When(/^I reject it$/, function() {
@@ -35,11 +41,12 @@ module.exports = fiberize(function() {
   });
 
   this.Then(/^I should see (?:my|the) badges? in my Backpack$/, function() {
-    this.backpack.should.includeEach(this.site.issuedBadges);
+    this.sendGroup[0].result.should.equal("accepted");
+    this.backpack.should.includeBadges(this.site.issuedBadges);
   });
 
   this.Then(/^I should not see it in my Backpack$/, function() {
-    this.backpack.should.not.includeEach(this.site.issuedBadges);
+    this.backpack.should.not.includeBadges(this.site.issuedBadges);
   });
 
   this.Then(/^I should see a notice that I already have that badge$/, function() {
