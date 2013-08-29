@@ -54,7 +54,7 @@ describe("app security headers", function() {
   });
 
   it('allow eval() in content security policy at /test/', function(done) {
-    request()
+    request({debug: true})
       .get('/test/')
       .expect('Content-Security-Policy', /'unsafe-eval'/, done);
   });
