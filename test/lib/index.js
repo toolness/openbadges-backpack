@@ -3,7 +3,7 @@ var express = require('express');
 
 var TEST_STATIC_DIR = path.join(__dirname, '..', 'static');
 
-exports.express = function(app) {
+exports.defineMiddleware = function(app) {
   app.use('/test', function(req, res, next) {
     var policies = res.contentSecurityPolicies;
 
