@@ -53,9 +53,7 @@ exports.defineRoutes = function(app, options) {
   }
 
   app.get('/test/issue', function(req, res, next) {
-    return res.render('test-issue.html', {
-      issueBadgeFor: issueBadgeFor
-    });
+    return res.render('test-issue.html', {});
   });
   app.post('/test/issue', function(req, res, next) {
     var email = req.param('email');
