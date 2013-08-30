@@ -5,19 +5,22 @@ var async = require('async');
 
 var testUtil = require('./util');
 
+var BADGEHOST_PORT = parseInt(process.env['BADGEHOST_PORT'] || '0');
 var TEST_STATIC_DIR = path.join(__dirname, '..', 'static');
 var TEST_TEMPLATE_DIR = path.join(__dirname, '..', 'template');
 
 function badgehostAppLazyLoader(app) {
   var badgehostSetupQueue = async.queue(function(task, cb) {
     if (app.badgehostApp) return cb(null);
-    require('./util').BadgehostApp(function(err, badgehostApp) {
+    testUtil.BadgehostApp(BADGEHOST_PORT, function(err, badgehostApp) {
       if (err) return cb(err);
       app.badgehostApp = badgehostApp;
       cb(null);
     });
   }, 1);
 
+  badgehostSetupQueue.push({});
+  
   return function(req, res, next) {
     badgehostSetupQueue.push({}, next);
   }
@@ -42,15 +45,21 @@ exports.defineMiddleware = function(app) {
   app.use('/test/issue', badgehostAppLazyLoader(app));
 };
 
-exports.defineRoutes = function(app) {
+exports.defineRoutes = function(app, options) {
+  function issueBadgeFor(email) {
+    var assertion = app.badgehostApp.badgeFor(email);
+    return options.origin + "/issue?assertion=" +
+           encodeURIComponent(assertion);
+  }
+
   app.get('/test/issue', function(req, res, next) {
     return res.render('test-issue.html', {
-      badgeFor: app.badgehostApp.badgeFor.bind(app.badgehostApp)
+      issueBadgeFor: issueBadgeFor
     });
   });
   app.post('/test/issue', function(req, res, next) {
     var email = req.param('email');
 
-    return res.redirect(app.badgehostApp.badgeFor(email));
+    return res.redirect(issueBadgeFor(email));
   });
 };

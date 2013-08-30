@@ -94,8 +94,13 @@ exports.FakeBackpack = function(owner) {
   return self;
 };
 
-exports.BadgehostApp = fibrous(function(cb) {
+exports.BadgehostApp = fibrous(function(port, cb) {
   var app = badgehost.app.build();
+
+  if (typeof(port) == 'function') {
+    cb = port;
+    port = 0;
+  }
 
   app.badgeFor = function(recipient, uid) {
     return app.url('demo.json', {
@@ -110,7 +115,7 @@ exports.BadgehostApp = fibrous(function(cb) {
     })
   };
 
-  app.listen(function() {
+  app.listen(port, function() {
     app.server = this;
     cb(null, app);
   });

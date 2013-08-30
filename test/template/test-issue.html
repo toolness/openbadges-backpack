@@ -2,7 +2,7 @@
 
 {% block content %}
 {% if email %}
-  <p>Here is a <a href="{{ badgeFor(email) }}">badge for
+  <p>Here is a <a href="{{ issueBadgeFor(email) }}">badge for
     {{ email }}</a>.</p>
 {% endif %}
 
