@@ -119,4 +119,6 @@ exports.BadgehostApp = fibrous(function(port, cb) {
     app.server = this;
     cb(null, app);
   });
+
+  return app;
 });

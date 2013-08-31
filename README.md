@@ -58,9 +58,19 @@ string), the boolean is true; otherwise, it's false.
   than HTTP, and the `SSL_KEY` environment variable must also
   be defined.
 
-## Tests
+* `TEST_ISSUER_PORT` is the port that the test issuer listens on.
+  It defaults to the value of `PORT` plus one (i.e., if `PORT` is
+  3000, then `TEST_ISSUER_PORT` is 3001). See below for more
+  details on the test issuer.
+
+## Testing
 
 All unit and acceptance tests can be run via `npm test`.
+
+### Manual Testing
+
+If `DEBUG` is defined, a test issuer is set up at `TEST_ISSUER_PORT`.
+This can be visited to easily issue test badges to the backpack.
 
 ### Unit Tests
 

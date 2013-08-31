@@ -5,6 +5,7 @@ var url = require('url');
 var assert = require('assert');
 
 const PORT = process.env['PORT'] || 3000;
+const TEST_ISSUER_PORT = process.env['TEST_ISSUER_PORT'] || (PORT + 1);
 const COOKIE_SECRET = process.env['COOKIE_SECRET'] || null;
 const DEBUG = ('DEBUG' in process.env);
 const ENABLE_STUBBYID = ('ENABLE_STUBBYID' in process.env);
@@ -23,6 +24,18 @@ if (SSL_KEY)
                'ORIGIN must be https if SSL is enabled.');
 if (ENABLE_STUBBYID)
   assert.ok(DEBUG, 'ENABLE_STUBBYID must be used with DEBUG.');
+
+function startTestIssuer() {
+  var TestIssuerApp = require('../test/lib/issuer');
+
+  TestIssuerApp({
+    port: TEST_ISSUER_PORT,
+    backpackURL: ORIGIN
+  }, function() {
+    console.log("Test issuer server listening on port " +
+                TEST_ISSUER_PORT + ".");
+  });
+}
 
 function startServer() {
   var app = require('../').app.build({
@@ -51,6 +64,8 @@ function startServer() {
                   ".\nSite must be accessed through the above URL, or " +
                   "login will fail.");
     console.log("Listening on port " + PORT + ".");
+
+    if (DEBUG) startTestIssuer();
   });
 }
 
