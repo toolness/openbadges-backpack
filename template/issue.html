@@ -16,65 +16,59 @@
 {% block content %}
 
 {% if email %}
-  {% if requests.length %}
+  {% if requests.pending.length %}
     <p>Here are badges that you can accept.</p>
 
     <form method="POST">
       <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-      {% for request in requests %}
-        {% if request.canBeAccepted %}
-          {{ badge(request) }}
-        {% endif %}
+      {% for request in requests.pending %}
+        {{ badge(request) }}
       {% endfor %}
       <input type="submit" value="Accept Selected Badges">
     <form>
+  {% endif %}
 
+  {% if requests.inBackpack.length %}
     <p>The following badges are already in your backpack.</p>
 
-    {% for request in requests %}
-      {% if request.result == "exists" %}
-        {{ badge(request) }}
-      {% endif %}
-    {% endfor %}
-
-    <p>The following badges are not issued to you ({{email}}).</p>
-
-    {% for request in requests %}
-      {% if request.result == "recipient_mismatch" %}
-        {{ badge(request) }}
-      {% endif %}
+    {% for request in requests.inBackpack %}
+      {{ badge(request) }}
     {% endfor %}
   {% endif %}
-  {% if acceptedRequests.length %}
+
+  {% if requests.mismatched.length %}
+    <p>The following badges are not issued to you ({{email}}).</p>
+
+    {% for request in requests.mismatched %}
+      {{ badge(request) }}
+    {% endfor %}
+  {% endif %}
+
+  {% if requests.accepted.length %}
     <p>Hooray! The following badges have just been added to your backpack.</p>
 
-    {% for request in acceptedRequests %}
-      {% if request.result == "accepted" %}
-        {{ badge(request) }}
-      {% endif %}
+    {% for request in requests.accepted %}
+      {{ badge(request) }}
     {% endfor %}
   {% endif %}
 {% else %}
   <p>Please log in so you can receive the following badges.</p>
 
-  {% for request in requests %}
-    {% if request.badgeInfo %}
-      {{ badge(request) }}
-    {% endif %}
+  {% for request in requests.valid %}
+    {{ badge(request) }}
   {% endfor %}
 {% endif %}
 
-{% if requests.length %}
+{% if requests.invalid.length %}
   <p>The following errors occurred while processing incoming badges.</p>
 
   <ol>
-  {% for request in requests %}
-    {% if request.result == "invalid" %}
-      <li>
-        <p>The badge <code>{{ request.urlOrSignature }}</code> was deemed invalid for the following reason:</p>
-        <pre>{{ request.error }}</pre>
-      </li>
-    {% endif %}
+  {% for request in requests.invalid %}
+    <li>
+      <p>The badge <code>{{ request.urlOrSignature }}</code> was deemed
+        invalid for the following reason:</p>
+      <pre>{{ request.error }}</pre>
+    </li>
   {% endfor %}
   </ol>
 {% endif %}
