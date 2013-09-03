@@ -1,20 +1,14 @@
 var should = require('should');
 var backpack = require('../').backpack;
 
-describe("backpack.forUser()", function() {
-  it("should work w/ no email", function(done) {
-    backpack.forUser(undefined, function(err, backpack) {
-      if (err) return done(err);
-      backpack.owner.should.eql("default");
-      done();
-    });
-  });
+var inFiber = require('./lib/fiber-mocha');
 
-  it("should work w/ email", function(done) {
-    backpack.forUser("foo@example.org", function(err, backpack) {
-      if (err) return done(err);
-      backpack.owner.should.eql("foo@example.org");
-      done();
-    });
-  });
+describe("backpack.forUser()", function() {
+  it("should work w/ no email", inFiber(function() {
+    backpack.forUser(undefined).owner.should.eql("default");
+  }));
+
+  it("should work w/ email", inFiber(function() {
+    backpack.forUser("a@example.org").owner.should.eql("a@example.org");
+  }));
 });
